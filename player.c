@@ -2,7 +2,7 @@
 
 
 void playerInit(Player *player) {
-    player->direction = North;
+    player->isMoving = false;
 
     player->velocity.x = 0;
     player->velocity.y = 0;
@@ -13,12 +13,9 @@ void playerInit(Player *player) {
     player->player.w = 20;
     player->player.h = 20;
 
+    player->speed = 2;
 }
 
-void move(Player *player,enum Direction direction) {
-   player->isMoving = true;
-
-}
 
 void renderPlayer(Player *player, SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0, 100, 0, 0xFF);
@@ -26,16 +23,33 @@ void renderPlayer(Player *player, SDL_Renderer *renderer) {
 }
 
 void updatePlayer(Player *player) {
-   /* if(player->isMoving){
-        player->player.y += player->velocity.y;
-        player->player.x += player->velocity.x;
+    if(player->isMoving){
+        player->player.y += player->velocity.y * player->speed;
+        player->player.x += player->velocity.x * player->speed;
+        enum Direction dir = player->direction;
 
-        if (player->player.y < 0) {
-            player->player.y = 0;
-        } else {
-           // if (player->player.y + player->player.h > SCREEN_HEIGHT) {
-          //      player->player.y = SCREEN_HEIGHT - player->player.h;
-          //  }
+        switch (dir) {
+            case North:
+                player->velocity.x = 0;
+                player->velocity.y = -1;
+                break;
+            case West:
+                player->velocity.x = -1;
+                player->velocity.y = 0;
+                break;
+            case East:
+                player->velocity.x = 1;
+                player->velocity.y = 0;
+                break;
+            case South:
+                player->velocity.x = 0;
+                player->velocity.y = 1;
+                break;
         }
-    } */
+
+    }
+}
+
+void stopPlayer(Player * player){
+    player->isMoving = false;
 }

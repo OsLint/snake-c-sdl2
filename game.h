@@ -24,3 +24,5 @@ void cleanupGame(Game *game);
 void handleGameEvents(Game *game, SDL_Event e);
 void updateGame(Game * game);
 void renderGame(Game * game);
+void checkPlayerCollision(Game * game);
+void generateApples(Game * game);

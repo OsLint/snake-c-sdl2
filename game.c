@@ -37,15 +37,23 @@ void handleGameEvents(Game *game, SDL_Event e) {
     if (e.type == SDL_KEYUP && e.key.repeat == 0) {
         switch (e.key.keysym.sym) {
             case SDLK_w:
+                printf("North\n");
+                game->player->isMoving = true;
                 game->player->direction = North;
                 break;
             case SDLK_s:
+                printf("South\n");
+                game->player->isMoving = true;
                 game->player->direction = South;
                 break;
             case SDLK_a:
+                printf("West\n");
+                game->player->isMoving = true;
                 game->player->direction = West;
                 break;
             case SDLK_d:
+                printf("East\n");
+                game->player->isMoving = true;
                 game->player->direction = East;
                 break;
         }
@@ -54,8 +62,8 @@ void handleGameEvents(Game *game, SDL_Event e) {
 
 void updateGame(Game *game) {
     SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 0xFF);
-
     updatePlayer(game->player);
+    checkPlayerCollision(game);
 }
 
 void renderGame(Game *game) {
@@ -63,4 +71,13 @@ void renderGame(Game *game) {
     SDL_RenderClear(game->renderer);
     renderPlayer(game->player, game->renderer);
     SDL_RenderPresent(game->renderer);
+}
+
+void checkPlayerCollision(Game *game) {
+    if (game->player->player.x < 0 || game->player->player.x > SCREEN_WIDTH ||
+        game->player->player.y < 0 || game->player->player.y > SCREEN_HEIGHT) {
+        //game->isRunning = false;
+        stopPlayer(game->player);
+        printf("Player hit the wall\n");
+    }
 }
