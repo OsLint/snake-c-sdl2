@@ -1,12 +1,11 @@
 #include <stdlib.h>
+#include <pthread.h>
 
 
 #include "SDL.h"
 #include "game.h"
 
-//TODO: implement map to store snake segments coordinates
-//TODO: implement player movement
-//TODO: implement apple generation
+
 
 
 const int TARGET_FPS = 60;
@@ -14,6 +13,9 @@ const int DELAY_TIME = 1000 / TARGET_FPS;
 
 
 int main() {
+
+
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not be initialized!\n");
         printf("SDL_Error: %s\n", SDL_GetError());
@@ -26,6 +28,16 @@ int main() {
         printf("Game could not be initialized!");
         return 1;
     }
+
+    pthread_t thread;
+
+     if (pthread_create(&thread, NULL, spawnApplesThread, (void*)game) != 0) {
+
+        fprintf(stderr, "Error creating thread\n");
+        return 1;
+    }
+
+
     SDL_Event e;
 
     while (game->isRunning){
@@ -46,6 +58,8 @@ int main() {
         }
 
     }
+
+    pthread_join(thread, NULL);
 
     cleanupGame(game);
     SDL_Quit();

@@ -1,12 +1,84 @@
 #include "game.h"
 
+//TODO: implement map to store snake segments coordinates
+
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 640;
+int APPLE_COUNTER = 0;
+int PLAYER_POINTS = 0;
 
+//Apple Generation
+bool rectOverlap(SDL_Rect *rect, SDL_Rect *rect2) {
+    return !(rect->x + rect->w < rect2->x ||
+             rect->x > rect2->x + rect2->w ||
+             rect->y + rect->h < rect2->y ||
+             rect->y > rect2->y + rect2->h);
+}
+
+void spawnApple(Apple *apple) {
+    srand((unsigned int) time(0));
+    int x, y;
+
+
+    x = rand() % (SCREEN_WIDTH / 20);
+    y = rand() % (SCREEN_HEIGHT / 20);
+
+    x = x > 800 ? 800 : x;
+    y = y > 640 ? 640 : y;
+
+    apple->apple.x = x * 20;
+    apple->apple.y = y * 20;
+
+    apple->apple.w = 20;
+    apple->apple.h = 20;
+
+}
+
+void *spawnApplesThread(void *arg) {
+    Game *game = (Game *) arg;
+
+    while (game->isRunning) {
+        if (APPLE_COUNTER < 10) {
+            spawnApple(&game->apples[APPLE_COUNTER]);
+
+            for (int i = 0; i < APPLE_COUNTER; ++i) {
+                if (rectOverlap(&game->apples[APPLE_COUNTER].apple, &game->apples[i].apple)) {
+                    APPLE_COUNTER--;
+                    break;
+                }
+            }
+
+
+            APPLE_COUNTER++;
+            usleep(2000000); // 2seconds
+        }
+    }
+    return NULL;
+}
+
+//Render
+void renderApple(Apple *apple, SDL_Renderer *renderer) {
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0xFF);
+    SDL_RenderFillRect(renderer, &apple->apple);
+}
+
+void renderApples(Game *game) {
+    for (int i = 0; i < APPLE_COUNTER; ++i) {
+        renderApple((Apple *) &game->apples[i], game->renderer);
+    }
+}
+
+void renderGame(Game *game) {
+    SDL_RenderClear(game->renderer);
+    renderApples(game);
+    renderPlayer(game->player, game->renderer);
+    SDL_RenderPresent(game->renderer);
+}
+
+//Game Util
 int initializeGame(Game *game) {
     game->window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                     SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-
     if (!game->window) {
         printf("Window could not be created!\n");
         printf("SDL_ERROR: %s\n", SDL_GetError());
@@ -36,23 +108,23 @@ void cleanupGame(Game *game) {
 void handleGameEvents(Game *game, SDL_Event e) {
     if (e.type == SDL_KEYUP && e.key.repeat == 0) {
         switch (e.key.keysym.sym) {
+            case SDLK_ESCAPE :
+                system("clear");
+                printf("Leaving the game you gathered %d points!\n", PLAYER_POINTS);
+                game->isRunning = false;
             case SDLK_w:
-                printf("North\n");
                 game->player->isMoving = true;
                 game->player->direction = North;
                 break;
             case SDLK_s:
-                printf("South\n");
                 game->player->isMoving = true;
                 game->player->direction = South;
                 break;
             case SDLK_a:
-                printf("West\n");
                 game->player->isMoving = true;
                 game->player->direction = West;
                 break;
             case SDLK_d:
-                printf("East\n");
                 game->player->isMoving = true;
                 game->player->direction = East;
                 break;
@@ -64,20 +136,35 @@ void updateGame(Game *game) {
     SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 0xFF);
     updatePlayer(game->player);
     checkPlayerCollision(game);
-}
 
-void renderGame(Game *game) {
-
-    SDL_RenderClear(game->renderer);
-    renderPlayer(game->player, game->renderer);
-    SDL_RenderPresent(game->renderer);
 }
 
 void checkPlayerCollision(Game *game) {
     if (game->player->player.x < 0 || game->player->player.x > SCREEN_WIDTH ||
         game->player->player.y < 0 || game->player->player.y > SCREEN_HEIGHT) {
-        //game->isRunning = false;
-        stopPlayer(game->player);
+        game->isRunning = false;
         printf("Player hit the wall\n");
+        stopPlayer(game->player);
+
+    }
+
+    for (int i = 0; i < APPLE_COUNTER; ++i) {
+        if (rectOverlap(&game->player->player, &game->apples[i].apple)) {
+            PLAYER_POINTS++;
+            system("clear");
+            printf("Points: %d\n", PLAYER_POINTS);
+            for (int j = i; j < APPLE_COUNTER - 1; ++j) {
+                game->apples[j] = game->apples[j + 1];
+            }
+            APPLE_COUNTER--;
+        }
     }
 }
+
+
+
+
+
+
+
+
