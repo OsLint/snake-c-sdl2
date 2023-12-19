@@ -1,11 +1,20 @@
 #include "game.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#define CLEAR_SCREEN system("cls")
+#else
+#define CLEAR_SCREEN system("clear")
+#endif
+
+
+
 //TODO: implement map to store snake segments coordinates
 
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 640;
 int APPLE_COUNTER = 0;
-int PLAYER_POINTS = 0;
+
 
 //Apple Generation
 bool rectOverlap(SDL_Rect *rect, SDL_Rect *rect2) {
@@ -109,7 +118,7 @@ void handleGameEvents(Game *game, SDL_Event e) {
     if (e.type == SDL_KEYUP && e.key.repeat == 0) {
         switch (e.key.keysym.sym) {
             case SDLK_ESCAPE :
-                system("clear");
+                CLEAR_SCREEN;
                 printf("Leaving the game you gathered %d points!\n", PLAYER_POINTS);
                 game->isRunning = false;
             case SDLK_w:
@@ -140,8 +149,8 @@ void updateGame(Game *game) {
 }
 
 void checkPlayerCollision(Game *game) {
-    if (game->player->player.x < 0 || game->player->player.x > SCREEN_WIDTH ||
-        game->player->player.y < 0 || game->player->player.y > SCREEN_HEIGHT) {
+    if (game->player->head.x < 0 || game->player->head.x > SCREEN_WIDTH ||
+        game->player->head.y < 0 || game->player->head.y > SCREEN_HEIGHT) {
         game->isRunning = false;
         printf("Player hit the wall\n");
         stopPlayer(game->player);
@@ -149,10 +158,23 @@ void checkPlayerCollision(Game *game) {
     }
 
     for (int i = 0; i < APPLE_COUNTER; ++i) {
-        if (rectOverlap(&game->player->player, &game->apples[i].apple)) {
+        if (rectOverlap(&game->player->head, &game->apples[i].apple)) {
             PLAYER_POINTS++;
-            system("clear");
+            CLEAR_SCREEN;
             printf("Points: %d\n", PLAYER_POINTS);
+
+
+            if (game->player->segmentCount < MAX_SEGMENTS) {
+                SDL_Rect * newSegment = malloc(sizeof (SDL_Rect));
+                initSegment(newSegment,&game->player->head);
+
+                game->player->segments[game->player->segmentCount] = *newSegment;
+                game->player->segmentCount++;
+                game->player->speed++;
+                free(newSegment);
+            }
+
+
             for (int j = i; j < APPLE_COUNTER - 1; ++j) {
                 game->apples[j] = game->apples[j + 1];
             }

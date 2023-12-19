@@ -6,10 +6,11 @@
 #include "player.h"
 
 
+
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
 extern int APPLE_COUNTER;
-extern int PLAYER_POINTS;
+
 
 typedef struct {
     SDL_Rect apple;
