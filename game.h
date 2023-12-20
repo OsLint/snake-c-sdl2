@@ -1,11 +1,10 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
+#include <string.h>
 
 #include "SDL.h"
 #include "player.h"
-
-
 
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
@@ -16,6 +15,8 @@ typedef struct {
     SDL_Rect apple;
 } Apple;
 
+
+
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -25,8 +26,7 @@ typedef struct {
     Apple apples[100];
 } Game;
 
-//Apple Generation
-bool rectOverlap(SDL_Rect * rect, SDL_Rect * rect2);
+bool rectOverlap(SDL_Rect *rect, SDL_Rect *rect2);
 
 void spawnApple(Apple *apple);
 

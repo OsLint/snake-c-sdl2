@@ -7,7 +7,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 find_package(SDL2 REQUIRED COMPONENTS SDL2)
 
-add_executable(SnakeC main.c game.c game.h player.c player.h Map.c Map.h)
+
+add_executable(SnakeC main.c game.c game.h player.c player.h)
+
 
 target_link_libraries(SnakeC PRIVATE SDL2::SDL2)
 

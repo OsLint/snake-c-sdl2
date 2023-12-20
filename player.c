@@ -69,10 +69,8 @@ void updatePlayer(Player *player) {
     }
 }
 
-void stopPlayer(Player *player) {
-    player->isMoving = false;
-    player->velocity.x = 0;
-    player->velocity.y = 0;
+void cleanPlayer(Player *player) {
+
 }
 
 void initSegment(SDL_Rect * segment,SDL_Rect * head){
@@ -80,6 +78,5 @@ void initSegment(SDL_Rect * segment,SDL_Rect * head){
     segment->y = head->y;
     segment->w = head->w;
     segment->h = head->h;
-
 }
 

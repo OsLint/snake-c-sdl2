@@ -22,6 +22,8 @@ int main() {
         return 1;
     }
 
+
+
     Game * game = malloc(sizeof (Game));
     int gameInit = initializeGame(game);
     if(gameInit != 0){

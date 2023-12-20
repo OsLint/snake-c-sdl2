@@ -1,3 +1,4 @@
+
 #include "game.h"
 
 #ifdef _WIN32
@@ -7,25 +8,27 @@
 #define CLEAR_SCREEN system("clear")
 #endif
 
-
-
-//TODO: implement map to store snake segments coordinates
-
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 640;
 int APPLE_COUNTER = 0;
 
 
-//Apple Generation
 bool rectOverlap(SDL_Rect *rect, SDL_Rect *rect2) {
-    return !(rect->x + rect->w < rect2->x ||
-             rect->x > rect2->x + rect2->w ||
-             rect->y + rect->h < rect2->y ||
-             rect->y > rect2->y + rect2->h);
+    bool overlap = false;
+
+    if (rect->x < rect2->x + rect2->w &&
+        rect->x + rect->w > rect2->x &&
+        rect->y < rect2->y + rect2->h &&
+        rect->y + rect->h > rect2->y) {
+        overlap = true;
+    }
+
+
+    return overlap;
 }
 
 void spawnApple(Apple *apple) {
-    srand((unsigned int) time(0));
+    srand((unsigned int) time(NULL));
     int x, y;
 
 
@@ -81,6 +84,7 @@ void renderGame(Game *game) {
     SDL_RenderClear(game->renderer);
     renderApples(game);
     renderPlayer(game->player, game->renderer);
+
     SDL_RenderPresent(game->renderer);
 }
 
@@ -102,15 +106,21 @@ int initializeGame(Game *game) {
             game->isRunning = true;
             game->player = malloc(sizeof(Player));
             playerInit(game->player);
+
         }
     }
     return 0;
 }
 
 void cleanupGame(Game *game) {
+
+    cleanPlayer(game->player);
+
     SDL_DestroyRenderer(game->renderer);
     SDL_DestroyWindow(game->window);
+
     free(game->player);
+
     free(game);
 }
 
@@ -121,6 +131,7 @@ void handleGameEvents(Game *game, SDL_Event e) {
                 CLEAR_SCREEN;
                 printf("Leaving the game you gathered %d points!\n", PLAYER_POINTS);
                 game->isRunning = false;
+                break;
             case SDLK_w:
                 game->player->isMoving = true;
                 game->player->direction = North;
@@ -153,8 +164,6 @@ void checkPlayerCollision(Game *game) {
         game->player->head.y < 0 || game->player->head.y > SCREEN_HEIGHT) {
         game->isRunning = false;
         printf("Player hit the wall\n");
-        stopPlayer(game->player);
-
     }
 
     for (int i = 0; i < APPLE_COUNTER; ++i) {
@@ -165,8 +174,9 @@ void checkPlayerCollision(Game *game) {
 
 
             if (game->player->segmentCount < MAX_SEGMENTS) {
-                SDL_Rect * newSegment = malloc(sizeof (SDL_Rect));
-                initSegment(newSegment,&game->player->head);
+                SDL_Rect *newSegment = malloc(sizeof(SDL_Rect));
+                initSegment(newSegment, &game->player->head);
+
 
                 game->player->segments[game->player->segmentCount] = *newSegment;
                 game->player->segmentCount++;

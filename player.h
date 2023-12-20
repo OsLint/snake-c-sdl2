@@ -26,5 +26,5 @@ typedef struct {
 void playerInit(Player * player);
 void renderPlayer(Player * player, SDL_Renderer *renderer);
 void updatePlayer(Player * player);
-void stopPlayer(Player * player);
+void cleanPlayer(Player * player);
 void initSegment(SDL_Rect * segment,SDL_Rect * head);
