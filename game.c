@@ -114,7 +114,7 @@ int initializeGame(Game *game) {
 
 void cleanupGame(Game *game) {
 
-    cleanPlayer(game->player);
+
 
     SDL_DestroyRenderer(game->renderer);
     SDL_DestroyWindow(game->window);
@@ -134,19 +134,27 @@ void handleGameEvents(Game *game, SDL_Event e) {
                 break;
             case SDLK_w:
                 game->player->isMoving = true;
-                game->player->direction = North;
+                 if (game->player->direction != South) {
+                     game->player->direction = North;
+                 }
                 break;
             case SDLK_s:
-                game->player->isMoving = true;
-                game->player->direction = South;
+                 game->player->isMoving = true;
+                 if (game->player->direction != North) {
+                     game->player->direction = South;
+                 }
                 break;
             case SDLK_a:
                 game->player->isMoving = true;
-                game->player->direction = West;
+                 if (game->player->direction != East) {
+                     game->player->direction = West;
+                 }
                 break;
             case SDLK_d:
                 game->player->isMoving = true;
-                game->player->direction = East;
+                 if (game->player->direction != West) {
+                     game->player->direction = East;
+                 }
                 break;
         }
     }
@@ -180,7 +188,7 @@ void checkPlayerCollision(Game *game) {
 
                 game->player->segments[game->player->segmentCount] = *newSegment;
                 game->player->segmentCount++;
-                game->player->speed++;
+                game->player->speed += 0.3;
                 free(newSegment);
             }
 

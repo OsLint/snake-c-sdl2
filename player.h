@@ -16,7 +16,7 @@ enum Direction {
 typedef struct {
     SDL_Rect head;
     SDL_Point velocity;
-    int speed;
+    double speed;
     enum Direction direction;
     bool isMoving;
     SDL_Rect segments[MAX_SEGMENTS];
@@ -26,5 +26,4 @@ typedef struct {
 void playerInit(Player * player);
 void renderPlayer(Player * player, SDL_Renderer *renderer);
 void updatePlayer(Player * player);
-void cleanPlayer(Player * player);
 void initSegment(SDL_Rect * segment,SDL_Rect * head);

@@ -33,6 +33,9 @@ void renderPlayer(Player *player, SDL_Renderer *renderer) {
 }
 
 void updatePlayer(Player *player) {
+
+
+
     if (player->isMoving) {
 
 
@@ -63,17 +66,17 @@ void updatePlayer(Player *player) {
             case South:
                 player->velocity.x = 0;
                 player->velocity.y = 1;
+
                 break;
         }
         player->segments[0] = player->head;
     }
-}
 
-void cleanPlayer(Player *player) {
 
 }
 
-void initSegment(SDL_Rect * segment,SDL_Rect * head){
+
+void initSegment(SDL_Rect *segment, SDL_Rect *head) {
     segment->x = head->x;
     segment->y = head->y;
     segment->w = head->w;
