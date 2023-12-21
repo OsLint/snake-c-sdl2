@@ -1,12 +1,6 @@
 
 #include "game.h"
 
-#ifdef _WIN32
-#include <Windows.h>
-#define CLEAR_SCREEN system("cls")
-#else
-#define CLEAR_SCREEN system("clear")
-#endif
 
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 640;
@@ -46,10 +40,10 @@ void spawnApple(Apple *apple) {
 
 }
 
-void *spawnApplesThread(void *arg) {
-    Game *game = (Game *) arg;
 
-    while (game->isRunning) {
+Uint32 spawnApplesTimer(Uint32 interval, void * param){
+    Game* game = (Game*)param;
+
         if (APPLE_COUNTER < 10) {
             spawnApple(&game->apples[APPLE_COUNTER]);
 
@@ -59,13 +53,10 @@ void *spawnApplesThread(void *arg) {
                     break;
                 }
             }
-
-
             APPLE_COUNTER++;
-            usleep(2000000); // 2seconds
         }
-    }
-    return NULL;
+
+    return interval;
 }
 
 //Render
@@ -128,7 +119,6 @@ void handleGameEvents(Game *game, SDL_Event e) {
     if (e.type == SDL_KEYUP && e.key.repeat == 0) {
         switch (e.key.keysym.sym) {
             case SDLK_ESCAPE :
-                CLEAR_SCREEN;
                 printf("Leaving the game you gathered %d points!\n", PLAYER_POINTS);
                 game->isRunning = false;
                 break;
@@ -177,7 +167,6 @@ void checkPlayerCollision(Game *game) {
     for (int i = 0; i < APPLE_COUNTER; ++i) {
         if (rectOverlap(&game->player->head, &game->apples[i].apple)) {
             PLAYER_POINTS++;
-            CLEAR_SCREEN;
             printf("Points: %d\n", PLAYER_POINTS);
 
 

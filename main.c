@@ -1,6 +1,4 @@
 #include <stdlib.h>
-#include <pthread.h>
-
 
 #include "SDL.h"
 #include "game.h"
@@ -16,7 +14,7 @@ int main() {
 
 
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("SDL could not be initialized!\n");
         printf("SDL_Error: %s\n", SDL_GetError());
         return 1;
@@ -31,14 +29,9 @@ int main() {
         return 1;
     }
 
-    pthread_t thread;
 
-     if (pthread_create(&thread, NULL, spawnApplesThread, (void*)game) != 0) {
 
-        fprintf(stderr, "Error creating thread\n");
-        return 1;
-    }
-
+    SDL_TimerID spawnApples = SDL_AddTimer(1000,  spawnApplesTimer, game);
 
     SDL_Event e;
 
@@ -61,8 +54,8 @@ int main() {
 
     }
 
-    pthread_join(thread, NULL);
-
+    //pthread_join(thread, NULL);
+    SDL_RemoveTimer(spawnApples);
     cleanupGame(game);
     SDL_Quit();
 }

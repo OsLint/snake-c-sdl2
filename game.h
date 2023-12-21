@@ -16,7 +16,6 @@ typedef struct {
 } Apple;
 
 
-
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -30,7 +29,8 @@ bool rectOverlap(SDL_Rect *rect, SDL_Rect *rect2);
 
 void spawnApple(Apple *apple);
 
-void *spawnApplesThread(void *arg);
+
+Uint32 spawnApplesTimer(Uint32 interval, void * param);
 
 //Render
 void renderApple(Apple *apple, SDL_Renderer *renderer);
